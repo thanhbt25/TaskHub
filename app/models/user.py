@@ -3,11 +3,12 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.database import Base
 from app.models.enums import SystemRole
+import uuid
 
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(BigInteger, primary_key=True, index=True, autoincrement=True)
+    id = Column(String(36), primary_key=True, index=True, default=lambda: str(uuid.uuiid64()))
     email = Column(String(255), unique=True, nullable=False, index=True)
     full_name = Column(String(255), nullable=True)
     hashed_password = Column(String(255), nullable=False)

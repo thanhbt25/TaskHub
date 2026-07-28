@@ -2,11 +2,12 @@ from sqlalchemy import Column, BigInteger, String, Text, ForeignKey, Enum as SQL
 from sqlalchemy.orm import relationship
 from app.database import Base
 from app.models.enums import ProjectStatus
+import uuid 
 
 class Project(Base):
     __tablename__ = "projects"
 
-    id = Column(BigInteger, primary_key=True, index=True, autoincrement=True)
+    id = Column(String(36), primary_key=True, index=True, default=lambda: str(uuid.uuiid64()))
     workspace_id = Column(BigInteger, ForeignKey("workspaces.id", ondelete="CASCADE"), nullable=False)
     name = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
