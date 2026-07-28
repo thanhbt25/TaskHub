@@ -109,3 +109,11 @@ my_fastapi_project/
 ├── requirements.txt             # Danh sách thư viện Python cần cài đặt
 └── README.md                    # Hướng dẫn dự án
 ```
+
+## Chạy ứng dụng 
+- Bất khi có sự thay đổi nào trong code thì server sẽ tự động khởi động lại 
+- Nếu không cần, xóa --reload đi 
+```
+uv run uvicorn app.main:app --reload
+```
+- Quy tắc import app.(...), do chạy file từ folder TaskHub
