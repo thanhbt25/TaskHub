@@ -1,0 +1,17 @@
+version: '3.8' # phiên bản compose của docker 
+
+services: # khai báo service, bên dưới là danh sách các container sẽ chạy 
+  web: # có 1 container là web 
+    build: . # hãy build image từ dockerfile trong thư mục hiện tại . 
+    container_name: taskhub_app # đặt tên cho container, nếu không đặt nó sẽ tự sinh 
+    ports: # mapping cổng, máy thật 8000 -> container -> llocalhost:8000 chuyển thành container:8000
+      - "8000:8000"
+    volumes: 
+      # Mapping file/thư mục chứa SQLite từ máy thật vào container để giữ dữ liệu
+      # máy thật: ./app/database.sqlite 
+      # gắn vào container: /app/app/database.sqlite 
+      # do sqlite lưu DL trong 1 file, nếu không mapping database.sqlite khi xóa container thì file SQLite (trên máy thật) cũng mất 
+      - ./app/database.sqlite:/app/app/database.sqlite
+    environment:
+      # 
+      - DATABASE_URL=sqlite:///./app/database.sqlite
