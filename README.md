@@ -6,7 +6,7 @@
 ## DB Schema
 [ERD DIAGRAM](https://mermaid.live/edit#pako:eNqtVstu2kAU_ZXRSNmRFJtX7F0anBZFgZREiVQhWYN9MdPYM9bMuHkQ1v2Oqh_QfbPsl-RPOnYM2MEg0tareZxz77mPuTDDHvcB2xhEl5JAkGgkRgzpL5EgJJottuk3pgFlClEfnZ8Wz6USlAUIIkLDivNJEoYuIxFU3E2JnILvxkTKWy78IgJYEiHBQ0AjfNQ96_XRO3TmnL13hiNcUsU1hjBEpUs8Rb-W3PhEgaIRIE-AXvouUYvrebpYbLTzGxkTD94W8uuocji_ZSBcTTo5_ScxbgTReFMZVqhMXe2VsxyVlrEaUMzv4LrvDHV-nW7vcpAurnrOdTHRJX2x4F_AUzumqkruyS7JzI99kJ6gsaKcrcmXiqhEpg1yfNm7crTwo-HxR73qbpCuiLx5m-482HXV-b3uXBow2ByWoiosxaXgTu0W1eWgO9Ax9fru-XDwYehcXLzshk5aH73uDvpO-TXkTmNBuaDqvjIJIRlD-J-ysL12Hg-52FgId4uQ7H5bY2fcdUTJicejCNgbG3XhubraiZryiqed1dTjTGl3f_Pk9_bQp0QPsenz0zcU0OennwR5v797aPz86wcLykP58XF_n8-KM8vWzaKHjlz1QjVyOVBSgs4fZ4FEiq9oBZtbuXpur0ibyctJkXLS9BDKKohLWE57eaVrfl7D8vZJcT5MKIMK06U8rOzmr9YvBV8eEgWOW_BUUpSfb4Du7mTZqGseSvpLsFvBFYwwruFAUB_bSiRQwxEI_TOst3iWGhhhNQX9NHGWJCJutGU215yYsM-cRwua4EkwxfaEhFLvkjjt2_wPwRICzAdxzBOmsN1oNMzMCLZn-A7b-4bRPDAadbPd6ViWaZimVcP36bnVOWhaDateN5odq61h8xp-yDybBw2jVT9sHRpWu21ardb8D66tslM)
 
-1. users: id, email, full_name, hashed_password, role (ADMIN/MEMBER), is_active, created_at 
+1. users: id, email, username, hashed_password, role (ADMIN/MEMBER), is_active, created_at 
 2. workspaces: id, name, owner_id, created_at
 3. workspace_members: workspace_id, user_id, role (OWNER/EDITOR/VIEWER)
 4. projects: id, workspace_id, name, description, status (ACTIVE/ARCHIVED)
@@ -121,21 +121,41 @@ uv run uvicorn app.main:app --reload
 - Chạy migrations: khi có sự thay đổi nào thì chạy cái này
 ```
 # sinh file script ghi lại sự thay đổi 
-uv run alembic revision --autogenerate -m "Mô_tả_ngắn_gọn_thay_đổi"
+uv run python alembic revision --autogenerate -m "Mô_tả_ngắn_gọn_thay_đổi"
 
 # áp dụng thay đổi vào database (upgrade)
-uv run alembic upgrade head
+uv run python -m alembic upgrade head
 
 # xem phiên bản DB hiện tại đang ở đâu 
-uv run alembic current 
+uv run python alembic current 
 
 # xem toàn bộ lịch sử các bản migration 
-uv run alembic history --verbose 
+uv run python alembic history --verbose 
 
 # lùi 1 phiên bản gần nhất
-uv run alembic downgrade -1
+uv run python alembic downgrade -1
 
 # lùi hẳn về ban đầu (xóa sạch bảng)
-uv run alembic downgrade base 
+uv run python alembic downgrade base 
 ```
+
+### Format code 
+1. Format toàn bộ code 
+```
+uv format . # Cách 1
+uv run ruff format . # Cách 2  
+```
+2. kiểm tra định dạng (có dòng nào lỗi format không)
+```
+uv format --check .
+```
+3. kiểm tra lỗi 
+```
+uv run ruff check . 
+```
+4. tự động sửa lỗi các lỗi có thể sửa 
+```
+uv run ruff check --fix . 
+```
+
 

@@ -1,14 +1,30 @@
-from sqlalchemy import Column, BigInteger, String, Text, ForeignKey, Enum as SQLEnum
-from sqlalchemy.orm import relationship
+import uuid
+
 from app.database import Base
 from app.models.enums import ProjectStatus
-import uuid 
+from sqlalchemy import Column, ForeignKey, String, Text
+from sqlalchemy import Enum as SQLEnum
+from sqlalchemy.orm import relationship
+
+'''
+Các chế độ cascade: 
+- save-update: db.add() bảng cha vào session -> tất cả bảng con tự động được thêm vào session 
+- delete: khi xóa bảng cha, tất cả bảng con đều bị xóa theo 
+- delete-orphan: khi một bảng con bị gỡ quan hệ bảng cha(mồ côi) -> tự động bị xóa 
+- refresh-expire: khi db.refresh() hoặc làm hết hạn DL bảng cha, bảng con cũng được mới theo 
+- merge: db.merge() bảng cha từ session cũ sang mới -> bảng con cũng gộp theo 
+- all: = save-update, merge, refresh-expire, expunge, delete (không bao gồm delete-orphan)
+'''
 
 class Project(Base):
     __tablename__ = "projects"
 
-    id = Column(String(36), primary_key=True, index=True, default=lambda: str(uuid.uuiid64()))
-    workspace_id = Column(BigInteger, ForeignKey("workspaces.id", ondelete="CASCADE"), nullable=False)
+    id = Column(
+        String(36), primary_key=True, index=True, default=lambda: str(uuid.uuid4())
+    )
+    workspace_id = Column(
+        String(36), ForeignKey("workspaces.id", ondelete="CASCADE"), nullable=False
+    )
     name = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
     status = Column(
@@ -19,4 +35,6 @@ class Project(Base):
 
     workspace = relationship("Workspace", back_populates="projects")
     tasks = relationship("Task", back_populates="project", cascade="all, delete-orphan")
-    labels = relationship("Label", back_populates="project", cascade="all, delete-orphan")
+    labels = relationship(
+        "Label", back_populates="project", cascade="all, delete-orphan"
+    )
