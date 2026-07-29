@@ -1,8 +1,8 @@
-"""initial_uuid_tables
+"""database_init
 
-Revision ID: 35e45705f436
+Revision ID: 27536f77d4ac
 Revises: 
-Create Date: 2026-07-28 17:04:37.742681
+Create Date: 2026-07-29 09:58:00.334136
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '35e45705f436'
+revision: str = '27536f77d4ac'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -38,7 +38,7 @@ def upgrade() -> None:
     op.create_table('workspaces',
     sa.Column('id', sa.String(length=36), nullable=False),
     sa.Column('name', sa.String(length=255), nullable=False),
-    sa.Column('owner_id', sa.BigInteger(), nullable=True),
+    sa.Column('owner_id', sa.String(length=36), nullable=True),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
     sa.ForeignKeyConstraint(['owner_id'], ['users.id'], ondelete='SET NULL'),
     sa.PrimaryKeyConstraint('id')
@@ -48,7 +48,7 @@ def upgrade() -> None:
 
     op.create_table('projects',
     sa.Column('id', sa.String(length=36), nullable=False),
-    sa.Column('workspace_id', sa.BigInteger(), nullable=False),
+    sa.Column('workspace_id', sa.String(length=36), nullable=False),
     sa.Column('name', sa.String(length=255), nullable=False),
     sa.Column('description', sa.Text(), nullable=True),
     sa.Column('status', sa.Enum('ACTIVE', 'ARCHIVED', name='projectstatus', native_enum=False), nullable=False),
@@ -68,7 +68,7 @@ def upgrade() -> None:
     )
     op.create_table('labels',
     sa.Column('id', sa.String(length=36), nullable=False),
-    sa.Column('project_id', sa.BigInteger(), nullable=False),
+    sa.Column('project_id', sa.String(length=36), nullable=False),
     sa.Column('name', sa.String(length=100), nullable=False),
     sa.Column('color', sa.String(length=20), nullable=True),
     sa.ForeignKeyConstraint(['project_id'], ['projects.id'], ondelete='CASCADE'),
@@ -79,8 +79,8 @@ def upgrade() -> None:
 
     op.create_table('tasks',
     sa.Column('id', sa.String(length=36), nullable=False),
-    sa.Column('project_id', sa.BigInteger(), nullable=False),
-    sa.Column('assignee_id', sa.BigInteger(), nullable=True),
+    sa.Column('project_id', sa.String(length=36), nullable=False),
+    sa.Column('assignee_id', sa.String(length=36), nullable=True),
     sa.Column('title', sa.String(length=255), nullable=False),
     sa.Column('description', sa.Text(), nullable=True),
     sa.Column('status', sa.Enum('TODO', 'IN_PROGRESS', 'IN_REVIEW', 'DONE', name='taskstatus', native_enum=False), nullable=False),
@@ -94,8 +94,8 @@ def upgrade() -> None:
 
     op.create_table('comments',
     sa.Column('id', sa.String(length=36), nullable=False),
-    sa.Column('task_id', sa.BigInteger(), nullable=False),
-    sa.Column('author_id', sa.BigInteger(), nullable=True),
+    sa.Column('task_id', sa.String(length=36), nullable=False),
+    sa.Column('author_id', sa.String(length=36), nullable=True),
     sa.Column('content', sa.Text(), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
     sa.ForeignKeyConstraint(['author_id'], ['users.id'], ondelete='SET NULL'),

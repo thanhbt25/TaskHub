@@ -139,3 +139,23 @@ uv run alembic downgrade -1
 uv run alembic downgrade base 
 ```
 
+### Format code 
+1. Format toàn bộ code 
+```
+uv format . # Cách 1
+uv run ruff format . # Cách 2  
+```
+2. kiểm tra định dạng (có dòng nào lỗi format không)
+```
+uv format --check .
+```
+3. kiểm tra lỗi 
+```
+uv run ruff check . 
+```
+4. tự động sửa lỗi các lỗi có thể sửa 
+```
+uv run ruff check --fix . 
+```
+
+

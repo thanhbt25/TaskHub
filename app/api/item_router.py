@@ -4,9 +4,11 @@ from services import item_service
 
 router = APIRouter()
 
+
 @router.get("/", response_model=list[ItemResponse])
 def get_items():
     return item_service.get_items()
+
 
 @router.post("/", response_model=ItemResponse)
 def create_item(item: ItemCreate):

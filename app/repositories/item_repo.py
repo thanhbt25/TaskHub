@@ -4,8 +4,10 @@ from schemas.item_schema import ItemCreate, ItemResponse
 FAKE_DB = []
 CURRENT_ID = 1
 
+
 def get_all_items() -> list[ItemResponse]:
     return FAKE_DB
+
 
 def create_item(item: ItemCreate) -> ItemResponse:
     global CURRENT_ID
