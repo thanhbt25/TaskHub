@@ -10,7 +10,7 @@ class Comment(Base):
     __tablename__ = "comments"
 
     id = Column(
-        String(36), primary_key=True, index=True, default=lambda: str(uuid.uuiid64())
+        String(36), primary_key=True, index=True, default=lambda: str(uuid.uuid4())
     )
     task_id = Column(
         String(36), ForeignKey("tasks.id", ondelete="CASCADE"), nullable=False

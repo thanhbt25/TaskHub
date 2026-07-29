@@ -10,7 +10,7 @@ class Workspace(Base):
     __tablename__ = "workspaces"
 
     id = Column(
-        String(36), primary_key=True, index=True, default=lambda: str(uuid.uuiid64())
+        String(36), primary_key=True, index=True, default=lambda: str(uuid.uuid4())
     )
     name = Column(String(255), nullable=False)
     owner_id = Column(

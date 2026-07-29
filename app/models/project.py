@@ -6,12 +6,21 @@ from sqlalchemy import Column, ForeignKey, String, Text
 from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import relationship
 
+'''
+Các chế độ cascade: 
+- save-update: db.add() bảng cha vào session -> tất cả bảng con tự động được thêm vào session 
+- delete: khi xóa bảng cha, tất cả bảng con đều bị xóa theo 
+- delete-orphan: khi một bảng con bị gỡ quan hệ bảng cha(mồ côi) -> tự động bị xóa 
+- refresh-expire: khi db.refresh() hoặc làm hết hạn DL bảng cha, bảng con cũng được mới theo 
+- merge: db.merge() bảng cha từ session cũ sang mới -> bảng con cũng gộp theo 
+- all: = save-update, merge, refresh-expire, expunge, delete (không bao gồm delete-orphan)
+'''
 
 class Project(Base):
     __tablename__ = "projects"
 
     id = Column(
-        String(36), primary_key=True, index=True, default=lambda: str(uuid.uuiid64())
+        String(36), primary_key=True, index=True, default=lambda: str(uuid.uuid4())
     )
     workspace_id = Column(
         String(36), ForeignKey("workspaces.id", ondelete="CASCADE"), nullable=False

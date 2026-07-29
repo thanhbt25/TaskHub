@@ -6,12 +6,12 @@ from sqlalchemy import Column, ForeignKey, String, Text
 from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import relationship
 
-
+# quan hệ 1 - n thì cái n sẽ phải lấy id của 1 vào trong class, còn relationshiip thì 2 bên bảng đều phải viết 
 class Task(Base):
     __tablename__ = "tasks"
 
     id = Column(
-        String(36), primary_key=True, index=True, default=lambda: str(uuid.uuiid64())
+        String(36), primary_key=True, index=True, default=lambda: str(uuid.uuid4())
     )
     project_id = Column(
         String(36), ForeignKey("projects.id", ondelete="CASCADE"), nullable=False
