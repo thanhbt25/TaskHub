@@ -1,9 +1,9 @@
 from logging.config import fileConfig
 
 from alembic import context
-from app.database import DATABASE_URL, Base
 from sqlalchemy import engine_from_config, pool
 
+from app.database import DATABASE_URL, Base
 from app.models.associations import TaskLabel, WorkspaceMember
 from app.models.comment import Comment
 from app.models.label import Label

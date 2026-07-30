@@ -3,22 +3,20 @@ class ErrorMessages:
     FORBIDDEN_ACTION = "You do not have enough permissions to perform this action"
     ROLE_NOT_ALLOWED = "Your role is not allowed to access this resource"
     CREDENTIALS = "Could not validate credentials"
-    
+
     # Lỗi xác thực
     NOT_AUTHENTICATED = "Not authenticated"
     USER_NOT_FOUND = "User not found"
     TOKEN_EXPIRED = "Token has expired"
     NOT_TRUE_PASSWORD = "Password id not accurate"
 
-    
     # Lỗi dữ liệu khác
     PROJECT_NOT_FOUND = "Project description or ID not found"
     EXISTED_EMAIL = "Email already registered by another user"
     WRONG_EMAIL_OR_PASSWORD = "Invalid password or email"
-    INACTIVE_USER="User is not active"
+    INACTIVE_USER = "User is not active"
 
-    # Workspace 
+    # Workspace
     NOTFOUND_WORKSPACE = "Workspace not found"
     UPDATE_PERMISSION_WORKSPACE = "Only Owner or Editor can update workspace details"
     DELETE_PERMISSION_WORKSPACE = "Only the Owner can delete this workspace"
-

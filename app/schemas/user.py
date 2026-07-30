@@ -1,9 +1,10 @@
-from typing import Optional
+
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, model_validator
 
+
 class UserUpdateRequest(BaseModel):
-    username: Optional[str] = None
-    email: Optional[EmailStr] = None
+    username: str | None = None
+    email: EmailStr | None = None
 
 
 class UserResponse(BaseModel):
@@ -15,9 +16,12 @@ class UserResponse(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+
 class ChangePasswordRequest(BaseModel):
     current_password: str = Field(..., min_length=1, description="Mật khẩu hiện tại")
-    new_password: str = Field(..., min_length=6, description="Mật khẩu mới (tối thiểu 6 ký tự)")
+    new_password: str = Field(
+        ..., min_length=6, description="Mật khẩu mới (tối thiểu 6 ký tự)"
+    )
 
     @model_validator(mode="after")
     def check_passwords_differ(self):

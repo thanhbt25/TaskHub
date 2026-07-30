@@ -1,12 +1,14 @@
 import uuid
 
-from app.database import Base
-from app.models.enums import ProjectStatus
-from sqlalchemy import Column, ForeignKey, String, Text
+from sqlalchemy import Column, DateTime, ForeignKey, String, Text
 from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 
-'''
+from app.database import Base
+from app.models.enums import ProjectStatus
+
+"""
 Các chế độ cascade: 
 - save-update: db.add() bảng cha vào session -> tất cả bảng con tự động được thêm vào session 
 - delete: khi xóa bảng cha, tất cả bảng con đều bị xóa theo 
@@ -14,7 +16,8 @@ Các chế độ cascade:
 - refresh-expire: khi db.refresh() hoặc làm hết hạn DL bảng cha, bảng con cũng được mới theo 
 - merge: db.merge() bảng cha từ session cũ sang mới -> bảng con cũng gộp theo 
 - all: = save-update, merge, refresh-expire, expunge, delete (không bao gồm delete-orphan)
-'''
+"""
+
 
 class Project(Base):
     __tablename__ = "projects"
@@ -32,7 +35,13 @@ class Project(Base):
         default=ProjectStatus.ACTIVE,
         nullable=False,
     )
-
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(
+            DateTime(timezone=True),
+            server_default=func.now(),
+            onupdate=func.now(),
+    )
+    
     workspace = relationship("Workspace", back_populates="projects")
     tasks = relationship("Task", back_populates="project", cascade="all, delete-orphan")
     labels = relationship(

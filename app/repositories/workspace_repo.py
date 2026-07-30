@@ -1,13 +1,13 @@
-from typing import Optional, Dict, Any 
+from typing import Any
 
+from sqlalchemy.orm import Session
+
+from app.models.associations import WorkspaceMember
 from app.models.enums import WorkspaceRole
 from app.models.workspace import Workspace
-from app.models.associations import WorkspaceMember
-from sqlalchemy.orm import Session
 
 
 class WorkspaceRepository:
-
     def __init__(self, db: Session):
         self.db = db
 
@@ -17,16 +17,10 @@ class WorkspaceRepository:
         self.db.refresh(workspace)
         return workspace
 
-    def get_by_id(self, workspace_id: str) -> Optional[Workspace]:
-        return (
-            self.db.query(Workspace)
-            .filter(Workspace.id == workspace_id)
-            .first()
-        )
+    def get_by_id(self, workspace_id: str) -> Workspace | None:
+        return self.db.query(Workspace).filter(Workspace.id == workspace_id).first()
 
-    def get_member(
-        self, workspace_id: str, user_id: str
-    ) -> Optional[WorkspaceMember]:
+    def get_member(self, workspace_id: str, user_id: str) -> WorkspaceMember | None:
         return (
             self.db.query(WorkspaceMember)
             .filter(
@@ -39,9 +33,7 @@ class WorkspaceRepository:
     def add_member(
         self, workspace_id: str, user_id: str, role: WorkspaceRole
     ) -> WorkspaceMember:
-        member = WorkspaceMember(
-            workspace_id=workspace_id, user_id=user_id, role=role
-        )
+        member = WorkspaceMember(workspace_id=workspace_id, user_id=user_id, role=role)
         self.db.add(member)
         self.db.commit()
         self.db.refresh(member)
@@ -51,10 +43,10 @@ class WorkspaceRepository:
         self.db.delete(member)
         self.db.commit()
 
-    def update(self, workspace: Workspace, update_data: Dict[str, Any]) -> Workspace:
+    def update(self, workspace: Workspace, update_data: dict[str, Any]) -> Workspace:
         for key, value in update_data.items():
             setattr(workspace, key, value)
-        
+
         self.db.add(workspace)
         self.db.commit()
         self.db.refresh(workspace)

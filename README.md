@@ -114,7 +114,7 @@ my_fastapi_project/
 - Bất khi có sự thay đổi nào trong code thì server sẽ tự động khởi động lại 
 - Nếu không cần, xóa --reload đi 
 ```
-uv run uvicorn app.main:app --reload
+python -m uvicorn app.main:app --reload
 ```
 - Quy tắc import app.(...), do chạy file từ folder TaskHub
 - Vào http://127.0.0.1:8000/docs để xem Swagger 
