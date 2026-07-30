@@ -13,6 +13,7 @@ class Workspace(Base):
         String(36), primary_key=True, index=True, default=lambda: str(uuid.uuid4())
     )
     name = Column(String(255), nullable=False)
+    description = Column(String(500), nullable=True)
     owner_id = Column(
         String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True
     )
