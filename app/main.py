@@ -2,6 +2,7 @@ from app.database import Base, engine
 from fastapi import FastAPI
 from app.api.auth import router as auth_router 
 from app.api.user import router as user_router
+from app.api.workspaces import router as workspace_router
 
 PREFIX_API = "/api/v1"
 # 1. Lệnh này sẽ tự động tạo file database.sqlite và các bảng (nếu có)
@@ -16,6 +17,7 @@ app = FastAPI(
 # Include router 
 app.include_router(auth_router, prefix=PREFIX_API)
 app.include_router(user_router, prefix=PREFIX_API)
+app.include_router(workspace_router, prefix=PREFIX_API)
 
 @app.get("/")
 def read_root():

@@ -121,22 +121,22 @@ uv run uvicorn app.main:app --reload
 - Chạy migrations: khi có sự thay đổi nào thì chạy cái này
 ```
 # sinh file script ghi lại sự thay đổi 
-uv run python alembic revision --autogenerate -m "Mô_tả_ngắn_gọn_thay_đổi"
+uv run python -m alembic revision --autogenerate -m "Mô tả sự thay đổi"
 
 # áp dụng thay đổi vào database (upgrade)
 uv run python -m alembic upgrade head
 
 # xem phiên bản DB hiện tại đang ở đâu 
-uv run python alembic current 
+uv run alembic current 
 
 # xem toàn bộ lịch sử các bản migration 
-uv run python alembic history --verbose 
+uv run alembic history --verbose 
 
 # lùi 1 phiên bản gần nhất
-uv run python alembic downgrade -1
+uv run alembic downgrade -1
 
 # lùi hẳn về ban đầu (xóa sạch bảng)
-uv run python alembic downgrade base 
+uv run alembic downgrade base 
 ```
 
 ### Format code 
