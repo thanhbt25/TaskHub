@@ -1,5 +1,5 @@
 # repo là file làm việc trực tiếp với bảng users trong database 
-from typing import Optional
+from typing import Optional, Dict, Any 
 from sqlalchemy.orm import Session
 from app.models.user import User
 
@@ -24,4 +24,13 @@ class UserRepository:
         self.db.add(user)
         self.db.commit()
         self.db.refresh(user) # cập nhật lại object user -> do chưa có ID sẵn 
+        return user
+
+    def update(self, user: User, update_data: Dict[str, Any]) -> User:
+        for key, value in update_data.items():
+            setattr(user, key, value)
+        
+        self.db.add(user)
+        self.db.commit()
+        self.db.refresh(user)
         return user

@@ -11,7 +11,7 @@ class ErrorMessages:
     
     # Lỗi dữ liệu khác
     PROJECT_NOT_FOUND = "Project description or ID not found"
-    EXISTED_EMAIL = "Email existed in database"
+    EXISTED_EMAIL = "Email already registered by another user"
     WRONG_EMAIL_OR_PASSWORD = "Invalid password or email"
     INACTIVE_USER="User is not active"
 
