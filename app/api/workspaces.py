@@ -7,6 +7,7 @@ from app.schemas.workspace import (
     WorkspaceCreateRequest,
     WorkspaceMemberResponse,
     WorkspaceResponse,
+    WorkspaceUpdateRequest
 )
 from app.services.workspace_service import WorkspaceService
 from fastapi import APIRouter, Depends, status
@@ -65,3 +66,30 @@ def remove_workspace_member(
 ):
     service.remove_member(id, current_user, user_id)
     return {"message": "Member removed successfully"}
+
+@router.patch(
+    "/{id}", response_model=WorkspaceResponse, status_code=status.HTTP_200_OK
+)
+def update_workspace(
+    id: str,
+    dto: WorkspaceUpdateRequest,
+    current_user: User = Depends(get_current_user),
+    service: WorkspaceService = Depends(get_workspace_service),
+):
+    """
+    PATCH /api/v1/workspaces/{id} - Cập nhật thông tin Workspace (Tên, Mô tả)
+    """
+    return service.update_workspace(id, current_user, dto)
+
+
+@router.delete("/{id}", status_code=status.HTTP_200_OK)
+def delete_workspace(
+    id: str,
+    current_user: User = Depends(get_current_user),
+    service: WorkspaceService = Depends(get_workspace_service),
+):
+    """
+    DELETE /api/v1/workspaces/{id} - Xóa hoàn toàn Workspace
+    """
+    service.delete_workspace(id, current_user)
+    return {"message": "Workspace deleted successfully"}

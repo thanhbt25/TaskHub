@@ -33,3 +33,7 @@ class WorkspaceResponse(BaseModel):
     members: List[WorkspaceMemberResponse] = []
 
     model_config = ConfigDict(from_attributes=True)
+
+class WorkspaceUpdateRequest(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None

@@ -2,8 +2,9 @@ from app.models.user import User
 from app.models.workspace import Workspace
 from app.models.associations import WorkspaceMember
 from app.models.enums import WorkspaceRole, SystemRole
+from app.core.exceptions import ErrorMessages
 from app.repositories.workspace_repo import WorkspaceRepository
-from app.schemas.workspace import AddMemberRequest, WorkspaceCreateRequest
+from app.schemas.workspace import AddMemberRequest, WorkspaceCreateRequest, WorkspaceUpdateRequest
 from fastapi import HTTPException, status
 
 
@@ -139,3 +140,46 @@ class WorkspaceService:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You don't have permission to remove this member")
 
         self.workspace_repo.remove_member(member_to_remove)
+
+    def update_workspace(
+        self, workspace_id: str, current_user: User, dto: WorkspaceUpdateRequest
+    ) -> Workspace:
+        workspace = self.workspace_repo.get_by_id(workspace_id)
+        if not workspace:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=ErrorMessages.NOTFOUND_WORKSPACE
+            )
+
+        # Kiểm tra quyền: Chỉ OWNER hoặc EDITOR mới được sửa thông tin
+        requester = self.workspace_repo.get_member(workspace_id, current_user.id)
+        if not requester or requester.role not in [WorkspaceRole.OWNER, WorkspaceRole.EDITOR]:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=ErrorMessages.UPDATE_PERMISSION_WORKSPACE,
+            )
+
+        # Trích xuất dữ liệu thực sự gửi lên (bỏ qua None)
+        update_data = dto.model_dump(exclude_unset=True)
+        if not update_data:
+            return workspace
+
+        return self.workspace_repo.update(workspace, update_data)
+
+    def delete_workspace(self, workspace_id: str, current_user: User) -> None:
+        workspace = self.workspace_repo.get_by_id(workspace_id)
+        if not workspace:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=ErrorMessages.NOTFOUND_WORKSPACE,
+            )
+
+        # Kiểm tra quyền: Chỉ duy nhất OWNER mới được quyền xóa Workspace
+        requester = self.workspace_repo.get_member(workspace_id, current_user.id)
+        if not requester or requester.role != WorkspaceRole.OWNER:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=ErrorMessages.DELETE_PERMISSION_WORKSPACE,
+            )
+
+        self.workspace_repo.delete(workspace)

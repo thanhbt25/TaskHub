@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Dict, Any 
 
 from app.models.enums import WorkspaceRole
 from app.models.workspace import Workspace
@@ -49,4 +49,17 @@ class WorkspaceRepository:
 
     def remove_member(self, member: WorkspaceMember) -> None:
         self.db.delete(member)
+        self.db.commit()
+
+    def update(self, workspace: Workspace, update_data: Dict[str, Any]) -> Workspace:
+        for key, value in update_data.items():
+            setattr(workspace, key, value)
+        
+        self.db.add(workspace)
+        self.db.commit()
+        self.db.refresh(workspace)
+        return workspace
+
+    def delete(self, workspace: Workspace) -> None:
+        self.db.delete(workspace)
         self.db.commit()

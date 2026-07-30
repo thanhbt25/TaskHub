@@ -15,3 +15,8 @@ class ErrorMessages:
     WRONG_EMAIL_OR_PASSWORD = "Invalid password or email"
     INACTIVE_USER="User is not active"
 
+    # Workspace 
+    NOTFOUND_WORKSPACE = "Workspace not found"
+    UPDATE_PERMISSION_WORKSPACE = "Only Owner or Editor can update workspace details"
+    DELETE_PERMISSION_WORKSPACE = "Only the Owner can delete this workspace"
+
