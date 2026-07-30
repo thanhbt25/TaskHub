@@ -8,6 +8,8 @@ class ErrorMessages:
     NOT_AUTHENTICATED = "Not authenticated"
     USER_NOT_FOUND = "User not found"
     TOKEN_EXPIRED = "Token has expired"
+    NOT_TRUE_PASSWORD = "Password id not accurate"
+
     
     # Lỗi dữ liệu khác
     PROJECT_NOT_FOUND = "Project description or ID not found"
