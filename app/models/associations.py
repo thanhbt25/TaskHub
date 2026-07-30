@@ -1,9 +1,10 @@
 # chứa các bảng phụ N-N
-from app.database import Base
-from app.models.enums import WorkspaceRole
 from sqlalchemy import Column, ForeignKey, String
 from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import relationship
+
+from app.database import Base
+from app.models.enums import WorkspaceRole
 
 
 class TaskLabel(Base):

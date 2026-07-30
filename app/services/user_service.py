@@ -1,9 +1,11 @@
 from fastapi import HTTPException, status
-from app.repositories.user_repo import UserRepository
-from app.schemas.user import UserUpdateRequest, ChangePasswordRequest
-from app.models.user import User
+
 from app.core.exceptions import ErrorMessages
-from app.core.security import verify_password, hash_password
+from app.core.security import hash_password, verify_password
+from app.models.user import User
+from app.repositories.user_repo import UserRepository
+from app.schemas.user import ChangePasswordRequest, UserUpdateRequest
+
 
 class UserService:
     def __init__(self, user_repo: UserRepository):
@@ -14,7 +16,7 @@ class UserService:
         update_data = update_dto.model_dump(exclude_unset=True)
 
         if not update_data:
-            return current_user # Không có gì thay đổi
+            return current_user  # Không có gì thay đổi
 
         # 2. Kiểm tra nghiệp vụ: Nếu cập nhật Email, check xem email mới đã tồn tại chưa
         if "email" in update_data and update_data["email"] != current_user.email:
@@ -22,7 +24,7 @@ class UserService:
             if existing_user:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=ErrorMessages.EXISTED_EMAIL
+                    detail=ErrorMessages.EXISTED_EMAIL,
                 )
 
         # 3. Gọi Repo để cập nhật vào Database

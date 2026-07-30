@@ -1,14 +1,14 @@
 from datetime import datetime
-from typing import List, Optional
+
+from pydantic import BaseModel, ConfigDict
 
 from app.models.enums import WorkspaceRole
 from app.schemas.user import UserResponse
-from pydantic import BaseModel, ConfigDict
 
 
 class WorkspaceCreateRequest(BaseModel):
     name: str
-    description: Optional[str] = None
+    description: str | None = None
 
 
 class AddMemberRequest(BaseModel):
@@ -19,7 +19,7 @@ class AddMemberRequest(BaseModel):
 class WorkspaceMemberResponse(BaseModel):
     user_id: str
     role: WorkspaceRole
-    user: Optional[UserResponse] = None
+    user: UserResponse | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -27,13 +27,14 @@ class WorkspaceMemberResponse(BaseModel):
 class WorkspaceResponse(BaseModel):
     id: str
     name: str
-    description: Optional[str] = None
+    description: str | None = None
     owner_id: str
     created_at: datetime
-    members: List[WorkspaceMemberResponse] = []
+    members: list[WorkspaceMemberResponse] = []
 
     model_config = ConfigDict(from_attributes=True)
 
+
 class WorkspaceUpdateRequest(BaseModel):
-    name: Optional[str] = None
-    description: Optional[str] = None
+    name: str | None = None
+    description: str | None = None

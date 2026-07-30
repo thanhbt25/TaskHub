@@ -1,12 +1,14 @@
 import uuid
 
-from app.database import Base
-from app.models.enums import TaskStatus
 from sqlalchemy import Column, ForeignKey, String, Text
 from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import relationship
 
-# quan hệ 1 - n thì cái n sẽ phải lấy id của 1 vào trong class, còn relationshiip thì 2 bên bảng đều phải viết 
+from app.database import Base
+from app.models.enums import TaskStatus
+
+
+# quan hệ 1 - n thì cái n sẽ phải lấy id của 1 vào trong class, còn relationshiip thì 2 bên bảng đều phải viết
 class Task(Base):
     __tablename__ = "tasks"
 

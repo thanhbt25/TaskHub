@@ -31,5 +31,9 @@ app/database.sqlite
 # Docker logs
 .log
 
+# help function 
+convert_annotated.py
+
+
 
 
