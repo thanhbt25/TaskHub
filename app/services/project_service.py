@@ -1,11 +1,12 @@
-from typing import List, Optional
+
+from fastapi import HTTPException, status
+
 from app.models.enums import ProjectStatus, WorkspaceRole
 from app.models.project import Project
 from app.models.user import User
 from app.repositories.project_repo import ProjectRepository
 from app.repositories.workspace_repo import WorkspaceRepository
 from app.schemas.project import ProjectCreateRequest, ProjectUpdateRequest
-from fastapi import HTTPException, status
 
 
 class ProjectService:
@@ -22,7 +23,7 @@ class ProjectService:
         self,
         workspace_id: str,
         user_id: str,
-        required_roles: Optional[List[WorkspaceRole]] = None,
+        required_roles: list[WorkspaceRole] | None = None,
     ):
         workspace = self.workspace_repo.get_by_id(workspace_id)
         if not workspace:
@@ -68,8 +69,8 @@ class ProjectService:
         self,
         workspace_id: str,
         current_user: User,
-        status_filter: Optional[ProjectStatus] = None,
-    ) -> List[Project]:
+        status_filter: ProjectStatus | None = None,
+    ) -> list[Project]:
         # Tất cả thành viên Workspace đều được xem danh sách Project
         self._check_workspace_access(workspace_id, current_user.id)
         return self.project_repo.get_all_by_workspace(workspace_id, status_filter)

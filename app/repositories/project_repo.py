@@ -1,7 +1,9 @@
-from typing import Any, Dict, List, Optional
+from typing import Any
+
+from sqlalchemy.orm import Session
+
 from app.models.enums import ProjectStatus
 from app.models.project import Project
-from sqlalchemy.orm import Session
 
 
 class ProjectRepository:
@@ -15,18 +17,18 @@ class ProjectRepository:
         self.db.refresh(project)
         return project
 
-    def get_by_id(self, project_id: str) -> Optional[Project]:
+    def get_by_id(self, project_id: str) -> Project | None:
         return self.db.query(Project).filter(Project.id == project_id).first()
 
     def get_all_by_workspace(
-        self, workspace_id: str, status: Optional[ProjectStatus] = None
-    ) -> List[Project]:
+        self, workspace_id: str, status: ProjectStatus | None = None
+    ) -> list[Project]:
         query = self.db.query(Project).filter(Project.workspace_id == workspace_id)
         if status:
             query = query.filter(Project.status == status)
         return query.all()
 
-    def update(self, project: Project, update_data: Dict[str, Any]) -> Project:
+    def update(self, project: Project, update_data: dict[str, Any]) -> Project:
         for key, value in update_data.items():
             setattr(project, key, value)
 

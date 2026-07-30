@@ -1,24 +1,25 @@
 from datetime import datetime
-from typing import Optional
-from app.models.enums import ProjectStatus
+
 from pydantic import BaseModel, ConfigDict
+
+from app.models.enums import ProjectStatus
 
 
 class ProjectCreateRequest(BaseModel):
     name: str
-    description: Optional[str] = None
+    description: str | None = None
 
 
 class ProjectUpdateRequest(BaseModel):
-    name: Optional[str] = None
-    description: Optional[str] = None
+    name: str | None = None
+    description: str | None = None
 
 
 class ProjectResponse(BaseModel):
     id: str
     workspace_id: str
     name: str
-    description: Optional[str] = None
+    description: str | None = None
     status: ProjectStatus
     created_at: datetime
     updated_at: datetime

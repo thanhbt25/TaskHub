@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 
 from app.api.auth import router as auth_router
+from app.api.projects import router as project_router
 from app.api.user import router as user_router
 from app.api.workspaces import router as workspace_router
-from app.api.projects import router as project_router
 from app.database import Base, engine
 
 PREFIX_API = "/api/v1"
