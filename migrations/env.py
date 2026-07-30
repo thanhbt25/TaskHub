@@ -5,6 +5,15 @@ from sqlalchemy import engine_from_config, pool
 
 from app.database import DATABASE_URL, Base
 
+from app.models.associations import TaskLabel, WorkspaceMember
+from app.models.comment import Comment
+from app.models.label import Label
+from app.models.project import Project
+from app.models.task import Task
+from app.models.user import User
+from app.models.workspace import Workspace
+
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config

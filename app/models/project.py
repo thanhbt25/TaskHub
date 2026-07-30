@@ -1,8 +1,9 @@
 import uuid
 
-from sqlalchemy import Column, ForeignKey, String, Text
+from sqlalchemy import Column, ForeignKey, String, Text, DateTime
 from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 
 from app.database import Base
 from app.models.enums import ProjectStatus
@@ -34,7 +35,13 @@ class Project(Base):
         default=ProjectStatus.ACTIVE,
         nullable=False,
     )
-
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(
+            DateTime(timezone=True),
+            server_default=func.now(),
+            onupdate=func.now(),
+    )
+    
     workspace = relationship("Workspace", back_populates="projects")
     tasks = relationship("Task", back_populates="project", cascade="all, delete-orphan")
     labels = relationship(

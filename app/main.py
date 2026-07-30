@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from app.api.auth import router as auth_router
 from app.api.user import router as user_router
 from app.api.workspaces import router as workspace_router
+from app.api.projects import router as project_router
 from app.database import Base, engine
 
 PREFIX_API = "/api/v1"
@@ -19,6 +20,7 @@ app = FastAPI(
 app.include_router(auth_router, prefix=PREFIX_API)
 app.include_router(user_router, prefix=PREFIX_API)
 app.include_router(workspace_router, prefix=PREFIX_API)
+app.include_router(project_router, prefix=PREFIX_API)
 
 
 @app.get("/")
