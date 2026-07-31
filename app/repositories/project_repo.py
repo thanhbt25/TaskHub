@@ -7,7 +7,6 @@ from app.models.project import Project
 
 
 class ProjectRepository:
-
     def __init__(self, db: Session):
         self.db = db
 

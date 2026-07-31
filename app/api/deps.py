@@ -36,7 +36,8 @@ def get_auth_service(
 
 
 def get_current_user(
-    db: Annotated[Session, Depends(get_db)], token: Annotated[str, Depends(oauth2_scheme)]
+    db: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
 ) -> User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
