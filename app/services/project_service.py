@@ -1,4 +1,3 @@
-
 from fastapi import HTTPException, status
 
 from app.models.enums import ProjectStatus, WorkspaceRole
@@ -10,7 +9,6 @@ from app.schemas.project import ProjectCreateRequest, ProjectUpdateRequest
 
 
 class ProjectService:
-
     def __init__(
         self,
         project_repo: ProjectRepository,
@@ -123,9 +121,7 @@ class ProjectService:
         )
 
         # Chuyển trạng thái sang ARCHIVED
-        return self.project_repo.update(
-            project, {"status": ProjectStatus.ARCHIVED}
-        )
+        return self.project_repo.update(project, {"status": ProjectStatus.ARCHIVED})
 
     def delete_project(self, project_id: str, current_user: User) -> None:
         project = self.project_repo.get_by_id(project_id)

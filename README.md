@@ -158,4 +158,15 @@ uv run ruff check .
 uv run ruff check --fix . 
 ```
 
+### Khởi động Redis 
+- Sử dụng cho Task 
+```
+# Khi chưa có trong Docker 
+docker run -d --name taskhub-redis -p 6379:6379 redis:alpine
+# Gọi redis dậy trong Docker 
+docker start taskhub-redis
+# Check redis đã hoạt động chưa
+python -c "import redis; r = redis.Redis(host='localhost', port=6379, socket_timeout=2); print('Kết nối thành công!' if r.ping() else 'Lỗi')"
+```
+
 

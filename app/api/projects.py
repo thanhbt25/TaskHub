@@ -50,8 +50,7 @@ def get_projects_by_workspace(
     current_user: Annotated[User, Depends(get_current_user)],
     service: Annotated[ProjectService, Depends(get_project_service)],
     status: Annotated[
-        ProjectStatus | None, 
-        Query(description="Lọc theo trạng thái ACTIVE / ARCHIVED")
+        ProjectStatus | None, Query(description="Lọc theo trạng thái ACTIVE / ARCHIVED")
     ] = None,
 ):
     """Lấy danh sách tất cả các Projects trong Workspace (Có thể lọc theo status)"""
