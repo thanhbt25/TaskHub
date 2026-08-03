@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.models.enums import TaskPriority, TaskStatus
 from app.models.task import Task
+from app.models.label import Label
 
 
 class TaskRepository:
@@ -57,4 +58,12 @@ class TaskRepository:
 
     def delete(self, task: Task) -> None:
         self.db.delete(task)
+        self.db.commit()
+
+    def add_label(self, task: Task, label: Label):
+        task.labels.append(label)
+        self.db.commit()
+
+    def remove_label(self, task: Task, label: Label):
+        task.labels.remove(label)
         self.db.commit()
