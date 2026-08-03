@@ -1,6 +1,6 @@
 import math
 
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status, BackgroundTasks
 
 from app.core.redis import CacheService
 from app.models.enums import TaskPriority, TaskStatus, WorkspaceRole
@@ -9,12 +9,15 @@ from app.models.user import User
 from app.repositories.project_repo import ProjectRepository
 from app.repositories.task_repo import TaskRepository
 from app.repositories.workspace_repo import WorkspaceRepository
+from app.repositories.user_repo import UserRepository
 from app.schemas.task import (
     PaginatedResponse,
     TaskCreateRequest,
     TaskResponse,
     TaskUpdateRequest,
 )
+
+from app.services.email_service import EmailService 
 
 
 class TaskService:
@@ -23,10 +26,14 @@ class TaskService:
         task_repo: TaskRepository,
         project_repo: ProjectRepository,
         workspace_repo: WorkspaceRepository,
+        user_repo: UserRepository, 
+        email_service: EmailService
     ):
         self.task_repo = task_repo
         self.project_repo = project_repo
         self.workspace_repo = workspace_repo
+        self.user_repo = user_repo
+        self.email_service = email_service
 
     def _verify_project_access(
         self,
@@ -41,7 +48,7 @@ class TaskService:
                 detail="Project not found",
             )
 
-        member = self.workspace_repo.get_member(project.workspace_id, user_id)
+        member = self.workspace_repo.get_member(str(project.workspace_id), user_id)
         if not member:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
@@ -57,11 +64,11 @@ class TaskService:
         return project
 
     def create_task(
-        self, project_id: str, current_user: User, dto: TaskCreateRequest
+        self, project_id: str, current_user: User, dto: TaskCreateRequest, background_tasks: BackgroundTasks
     ) -> Task:
         self._verify_project_access(
             project_id,
-            current_user.id,
+            str(current_user.id),
             [WorkspaceRole.OWNER, WorkspaceRole.EDITOR],
         )
 
@@ -75,6 +82,18 @@ class TaskService:
         )
 
         created_task = self.task_repo.create(task)
+
+        # 2. Kiểm tra User được gán có tồn tại không
+        assignee = self.user_repo.get_by_id(str(dto.assignee_id))
+        if assignee:
+            if str(assignee.email):
+                background_tasks.add_task(
+                    self.email_service.send_task_assignment_email,
+                    to_email=str(assignee.email),
+                    task_title=str(created_task.title),
+                    assignee_name=str(assignee.username)
+                )
+  
         # Xóa Cache danh sách task của Project này
         CacheService.delete_pattern(f"project_tasks:{project_id}:*")
         return created_task
@@ -90,7 +109,7 @@ class TaskService:
         page: int = 1,
         size: int = 10,
     ) -> PaginatedResponse[TaskResponse]:
-        self._verify_project_access(project_id, current_user.id)
+        self._verify_project_access(project_id, str(current_user.id))
 
         # Xây dựng Key Cache unique theo param
         cache_key = (
@@ -138,8 +157,8 @@ class TaskService:
             )
 
         self._verify_project_access(
-            task.project_id,
-            current_user.id,
+            str(task.project_id),
+            str(current_user.id),
             [WorkspaceRole.OWNER, WorkspaceRole.EDITOR],
         )
 
@@ -160,11 +179,48 @@ class TaskService:
             )
 
         self._verify_project_access(
-            task.project_id,
-            current_user.id,
+            str(task.project_id),
+            str(current_user.id),
             [WorkspaceRole.OWNER, WorkspaceRole.EDITOR],
         )
 
         project_id = task.project_id
         self.task_repo.delete(task)
         CacheService.delete_pattern(f"project_tasks:{project_id}:*")
+
+    def assign_task(
+        self, 
+        task_id: str, 
+        assignee_id: str, 
+        current_user: User, 
+        background_tasks: BackgroundTasks
+    ) -> Task:
+        # 1. Kiểm tra Task có tồn tại không
+        task = self.task_repo.get_by_id(task_id)
+        if not task:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Task not found",
+            )
+
+        # 2. Kiểm tra User được gán có tồn tại không
+        assignee = self.user_repo.get_by_id(assignee_id)
+        if not assignee:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Assignee not found",
+            )
+
+        # 3. Cập nhật Task với người được gán mới
+        updated_task = self.task_repo.update(task, {"assignee_id": assignee.id})
+
+        # 4. Thêm tác vụ gửi email vào BackgroundTasks (Chạy ngầm không block API)
+        if str(assignee.email):
+            background_tasks.add_task(
+                self.email_service.send_task_assignment_email,
+                to_email=str(assignee.email),
+                task_title=str(updated_task.title),
+                assignee_name=str(assignee.username)
+            )
+
+        return updated_task
