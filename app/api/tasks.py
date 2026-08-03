@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user
@@ -17,6 +17,7 @@ from app.schemas.task import (
     TaskUpdateRequest,
 )
 from app.services.task_service import TaskService
+from app.services.label_service import LabelService
 
 router = APIRouter(tags=["Tasks"])
 
