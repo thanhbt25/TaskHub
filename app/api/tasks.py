@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status, BackgroundTasks
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user
@@ -10,6 +10,7 @@ from app.models.user import User
 from app.repositories.project_repo import ProjectRepository
 from app.repositories.task_repo import TaskRepository
 from app.repositories.workspace_repo import WorkspaceRepository
+from app.repositories.user_repo import UserRepository
 from app.schemas.task import (
     PaginatedResponse,
     TaskCreateRequest,
@@ -18,6 +19,7 @@ from app.schemas.task import (
 )
 from app.services.task_service import TaskService
 from app.services.label_service import LabelService
+from app.services.email_service import EmailService
 
 router = APIRouter(tags=["Tasks"])
 
@@ -26,7 +28,9 @@ def get_task_service(db: Annotated[Session, Depends(get_db)]) -> TaskService:
     task_repo = TaskRepository(db)
     project_repo = ProjectRepository(db)
     workspace_repo = WorkspaceRepository(db)
-    return TaskService(task_repo, project_repo, workspace_repo)
+    user_repo = UserRepository(db)
+    email_service = EmailService()
+    return TaskService(task_repo, project_repo, workspace_repo, email_service=email_service, user_repo=user_repo)
 
 
 @router.get(
@@ -78,11 +82,12 @@ def get_project_tasks(
 def create_task(
     id: str,
     dto: TaskCreateRequest,
+    background_tasks: BackgroundTasks,
     current_user: Annotated[User, Depends(get_current_user)],
     service: Annotated[TaskService, Depends(get_task_service)],
 ):
     """Tạo Task mới thuộc Project"""
-    return service.create_task(id, current_user, dto)
+    return service.create_task(id, current_user, dto, background_tasks)
 
 
 @router.patch(
@@ -109,3 +114,19 @@ def delete_task(
     """Xóa Task"""
     service.delete_task(id, current_user)
     return {"message": "Task deleted successfully"}
+
+@router.patch(
+    "/tasks/{task_id}/assign/{assignee_id}",
+    response_model=TaskResponse,
+    status_code=status.HTTP_200_OK,
+)
+def assign_task(
+    task_id: str,
+    assignee_id: str,
+    background_tasks: BackgroundTasks, # <-- FastAPI tự inject cái này
+    current_user: Annotated[User, Depends(get_current_user)],
+    service: Annotated[TaskService, Depends(get_task_service)],
+):
+    """Gán Task cho một User và gửi email thông báo ngầm"""
+    # Chuyền background_tasks xuống tầng Service
+    return service.assign_task(task_id, assignee_id, current_user, background_tasks)

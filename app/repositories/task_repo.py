@@ -67,3 +67,4 @@ class TaskRepository:
     def remove_label(self, task: Task, label: Label):
         task.labels.remove(label)
         self.db.commit()
+
