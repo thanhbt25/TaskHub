@@ -51,7 +51,7 @@ class ProjectService:
         # Kiểm tra quyền: Phải là OWNER hoặc EDITOR của Workspace
         self._check_workspace_access(
             workspace_id,
-            current_user.id,
+            str(current_user.id),  # Ép kiểu về str
             [WorkspaceRole.OWNER, WorkspaceRole.EDITOR],
         )
 
@@ -70,7 +70,7 @@ class ProjectService:
         status_filter: ProjectStatus | None = None,
     ) -> list[Project]:
         # Tất cả thành viên Workspace đều được xem danh sách Project
-        self._check_workspace_access(workspace_id, current_user.id)
+        self._check_workspace_access(workspace_id, str(current_user.id)) # Ép kiểu về str
         return self.project_repo.get_all_by_workspace(workspace_id, status_filter)
 
     def get_project_detail(self, project_id: str, current_user: User) -> Project:
@@ -81,7 +81,7 @@ class ProjectService:
                 detail="Project not found",
             )
 
-        self._check_workspace_access(project.workspace_id, current_user.id)
+        self._check_workspace_access(str(project.workspace_id), str(current_user.id)) # Ép kiểu về str
         return project
 
     def update_project(
@@ -95,8 +95,8 @@ class ProjectService:
             )
 
         self._check_workspace_access(
-            project.workspace_id,
-            current_user.id,
+            str(project.workspace_id), # Ép kiểu về str
+            str(current_user.id),      # Ép kiểu về str
             [WorkspaceRole.OWNER, WorkspaceRole.EDITOR],
         )
 
@@ -115,8 +115,8 @@ class ProjectService:
             )
 
         self._check_workspace_access(
-            project.workspace_id,
-            current_user.id,
+            str(project.workspace_id), # Ép kiểu về str
+            str(current_user.id),      # Ép kiểu về str
             [WorkspaceRole.OWNER, WorkspaceRole.EDITOR],
         )
 
@@ -132,8 +132,8 @@ class ProjectService:
             )
 
         self._check_workspace_access(
-            project.workspace_id,
-            current_user.id,
+            str(project.workspace_id), # Ép kiểu về str
+            str(current_user.id),      # Ép kiểu về str
             [WorkspaceRole.OWNER, WorkspaceRole.EDITOR],
         )
 

@@ -34,7 +34,7 @@ class AuthService:
 
     def authenticate_user(self, username: str, password: str) -> TokenResponse:
         user = self.user_repo.get_by_username(username=username)
-        if not user or not verify_password(password, user.hashed_password):
+        if not user or not verify_password(password, str(user.hashed_password)):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail=ErrorMessages.WRONG_EMAIL_OR_PASSWORD,

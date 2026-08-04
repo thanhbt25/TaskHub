@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
+
 from app.models.label import Label
 from app.schemas.label import LabelCreate
 
-from sqlalchemy.orm import Session
 
 class LabelRepository:
     def __init__(self, db: Session):

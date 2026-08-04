@@ -32,7 +32,7 @@ class UserService:
 
     def change_password(self, current_user: User, dto: ChangePasswordRequest) -> None:
         # 1. Kiểm tra mật khẩu hiện tại có chính xác không
-        if not verify_password(dto.current_password, current_user.hashed_password):
+        if not verify_password(dto.current_password, str(current_user.hashed_password)):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=ErrorMessages.NOT_TRUE_PASSWORD,

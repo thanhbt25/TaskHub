@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status, BackgroundTasks
+from fastapi import APIRouter, BackgroundTasks, Depends, Query, status
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user
@@ -9,17 +9,16 @@ from app.models.enums import TaskPriority, TaskStatus
 from app.models.user import User
 from app.repositories.project_repo import ProjectRepository
 from app.repositories.task_repo import TaskRepository
-from app.repositories.workspace_repo import WorkspaceRepository
 from app.repositories.user_repo import UserRepository
+from app.repositories.workspace_repo import WorkspaceRepository
 from app.schemas.task import (
     PaginatedResponse,
     TaskCreateRequest,
     TaskResponse,
     TaskUpdateRequest,
 )
-from app.services.task_service import TaskService
-from app.services.label_service import LabelService
 from app.services.email_service import EmailService
+from app.services.task_service import TaskService
 
 router = APIRouter(tags=["Tasks"])
 
