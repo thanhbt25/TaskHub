@@ -169,4 +169,18 @@ docker start taskhub-redis
 python -c "import redis; r = redis.Redis(host='localhost', port=6379, socket_timeout=2); print('Kết nối thành công!' if r.ping() else 'Lỗi')"
 ```
 
+# Chạy server từ docker 
+```
+# 1. gọi server dậy 
+docker compose up -d --build
+
+# 2. kiểm tra trạng thái Container, cột STATUS CỦA web và redis phải hiện chữ UP, nếu Exited nghĩa là có lỗi 
+docker compose ps
+
+# 3. xem log xem có thành công không, tương tác với server 
+docker compose logs -f 
+```
+- Kiểm tra giao diện Swagger http://localhost:8000/docs xem có chạy không 
+- Kiểm tra đọc/ghi DB và test Redis trên Swagger xem đã được chưa 
+
 
