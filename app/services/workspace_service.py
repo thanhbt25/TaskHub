@@ -29,10 +29,10 @@ class WorkspaceService:
 
         # Người tạo tự động trở thành OWNER
         self.workspace_repo.add_member(
-            created_ws.id, current_user.id, WorkspaceRole.OWNER
+            str(created_ws.id), str(current_user.id), WorkspaceRole.OWNER
         )
         self.workspace_repo.db.refresh(created_ws)  # refresh lại session
-        return self.workspace_repo.get_by_id(created_ws.id)
+        return self.workspace_repo.get_by_id(str(created_ws.id))
 
     def get_workspace_detail(self, workspace_id: str, current_user: User) -> Workspace:
         workspace = self.workspace_repo.get_by_id(workspace_id)
@@ -42,7 +42,7 @@ class WorkspaceService:
                 detail="Workspace not found",
             )
 
-        member = self.workspace_repo.get_member(workspace_id, current_user.id)
+        member = self.workspace_repo.get_member(workspace_id, str(current_user.id))
         if not member:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
@@ -62,7 +62,7 @@ class WorkspaceService:
             )
 
         # Chỉ OWNER hoặc EDITOR mới được phép thêm member
-        requester = self.workspace_repo.get_member(workspace_id, current_user.id)
+        requester = self.workspace_repo.get_member(workspace_id, str(current_user.id))
         if not requester or requester.role not in [
             WorkspaceRole.OWNER,
             WorkspaceRole.EDITOR,
@@ -91,7 +91,7 @@ class WorkspaceService:
                 detail="Workspace not found",
             )
 
-        requester = self.workspace_repo.get_member(workspace_id, current_user.id)
+        requester = self.workspace_repo.get_member(workspace_id, str(current_user.id))
         if not requester:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN, detail="Access denied"
@@ -107,30 +107,21 @@ class WorkspaceService:
             )
 
         # Không thể xóa Owner của Workspace
-        if member_to_remove.role == WorkspaceRole.OWNER:
+        if member_to_remove.role in [WorkspaceRole.OWNER]:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Cannot remove the workspace Owner",
             )
 
-        # User tự rời khỏi nhóm HOẶC Owner/Editor thực hiện xóa
-        is_self_removal = current_user.id == user_id_to_remove
-        is_owner_or_editor = requester.role in [
+        # Ép kiểu sang str trước khi so sánh logic
+        is_self_removal = str(current_user.id) == user_id_to_remove
+        has_permission = requester.role in [
             WorkspaceRole.OWNER,
             WorkspaceRole.EDITOR,
+            SystemRole.ADMIN,
         ]
 
-        if not (is_self_removal or is_owner_or_editor):
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="You don't have permission to remove this member",
-            )
-
-        self.workspace_repo.remove_member(member_to_remove)
-        is_self_removal = current_user.id == user_id_to_remove
-        is_admin_or_owner = requester.role in [WorkspaceRole.OWNER, SystemRole.ADMIN]
-
-        if not (is_self_removal or is_admin_or_owner):
+        if not (is_self_removal or has_permission):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="You don't have permission to remove this member",
@@ -149,7 +140,7 @@ class WorkspaceService:
             )
 
         # Kiểm tra quyền: Chỉ OWNER hoặc EDITOR mới được sửa thông tin
-        requester = self.workspace_repo.get_member(workspace_id, current_user.id)
+        requester = self.workspace_repo.get_member(workspace_id, str(current_user.id))
         if not requester or requester.role not in [
             WorkspaceRole.OWNER,
             WorkspaceRole.EDITOR,
@@ -175,8 +166,10 @@ class WorkspaceService:
             )
 
         # Kiểm tra quyền: Chỉ duy nhất OWNER mới được quyền xóa Workspace
-        requester = self.workspace_repo.get_member(workspace_id, current_user.id)
-        if not requester or requester.role != WorkspaceRole.OWNER:
+        requester = self.workspace_repo.get_member(workspace_id, str(current_user.id))
+        
+        # Sửa lại `!= WorkspaceRole.OWNER` thành `not in` để tránh sinh ra ColumnElement Expression
+        if not requester or requester.role not in [WorkspaceRole.OWNER]:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail=ErrorMessages.DELETE_PERMISSION_WORKSPACE,
