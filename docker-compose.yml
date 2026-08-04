@@ -4,14 +4,33 @@ services: # khai báo service, bên dưới là danh sách các container sẽ c
   web: # có 1 container là web 
     build: . # hãy build image từ dockerfile trong thư mục hiện tại . 
     container_name: taskhub_app # đặt tên cho container, nếu không đặt nó sẽ tự sinh 
-    ports: # mapping cổng, máy thật 8000 -> container -> llocalhost:8000 chuyển thành container:8000
+    ports: # mapping cổng, máy thật 8000 -> container
       - "8000:8000"
     volumes: 
       # Mapping file/thư mục chứa SQLite từ máy thật vào container để giữ dữ liệu
-      # máy thật: ./app/database.sqlite 
-      # gắn vào container: /app/app/database.sqlite 
-      # do sqlite lưu DL trong 1 file, nếu không mapping database.sqlite khi xóa container thì file SQLite (trên máy thật) cũng mất 
       - ./app/database.sqlite:/app/app/database.sqlite
+    env_file:
+      - .env
     environment:
-      # 
       - DATABASE_URL=sqlite:///./app/database.sqlite
+      # Thêm biến môi trường REDIS_URL để FastAPI kết nối. 
+      # CHÚ Ý: Host ở đây là tên container (taskhub_redis) chứ không phải localhost
+      - REDIS_URL=redis://taskhub_redis:6379/0
+    depends_on:
+      # Bắt buộc Redis phải khởi động trước thì web mới được chạy
+      - redis
+
+  # Kéo thêm thằng Redis vào chung nhà
+  redis:
+    image: redis:7-alpine # dùng bản alpine cho nhẹ nhàng
+    container_name: taskhub_redis # tên này khớp với tên bạn hay gọi tay
+    ports:
+      # Mapping cổng Redis ra máy thật để bạn có thể dùng Redis Insight soi data
+      - "6379:6379"
+    volumes:
+      # Giữ lại dữ liệu cache của Redis kể cả khi xóa container
+      - redis_data:/data
+
+# Khai báo volume cho Redis
+volumes:
+  redis_data:

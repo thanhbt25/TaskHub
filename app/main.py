@@ -8,6 +8,7 @@ from app.api.tasks import router as task_router
 from app.api.user import router as user_router
 from app.api.workspaces import router as workspace_router
 from app.database import Base, engine
+from app.core.common import GLOBAL_ERRORS
 
 PREFIX_API = "/api/v1"
 # 1. Lệnh này sẽ tự động tạo file database.sqlite và các bảng (nếu có)
@@ -20,13 +21,13 @@ app = FastAPI(
 )
 
 # Include router
-app.include_router(auth_router, prefix=PREFIX_API)
-app.include_router(user_router, prefix=PREFIX_API)
-app.include_router(workspace_router, prefix=PREFIX_API)
-app.include_router(project_router, prefix=PREFIX_API)
-app.include_router(task_router, prefix=PREFIX_API)
-app.include_router(label_router, prefix=PREFIX_API)
-app.include_router(comment_router, prefix=PREFIX_API)
+app.include_router(auth_router, prefix=PREFIX_API, responses=GLOBAL_ERRORS)
+app.include_router(user_router, prefix=PREFIX_API, responses=GLOBAL_ERRORS)
+app.include_router(workspace_router, prefix=PREFIX_API, responses=GLOBAL_ERRORS)
+app.include_router(project_router, prefix=PREFIX_API, responses=GLOBAL_ERRORS)
+app.include_router(task_router, prefix=PREFIX_API, responses=GLOBAL_ERRORS)
+app.include_router(label_router, prefix=PREFIX_API, responses=GLOBAL_ERRORS)
+app.include_router(comment_router, prefix=PREFIX_API, responses=GLOBAL_ERRORS)
 
 @app.get("/")
 def read_root():
