@@ -1,8 +1,9 @@
-import os
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+
 from app.core.config import settings
+
 
 class EmailService:
     def __init__(self):
@@ -45,6 +46,6 @@ class EmailService:
             server.send_message(msg)
             server.quit()
             print(f"Email sent successfully to {to_email}")
-        except Exception as e:
+        except (smtplib.SMTPException, OSError) as e:
             # Ở background task, ta nên log lỗi ra console/file thay vì raise Exception
-            print(f"Failed to send email to {to_email}: {str(e)}")
+            print(f"Failed to send email to {to_email}: {e!s}")

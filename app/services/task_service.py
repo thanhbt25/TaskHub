@@ -1,6 +1,6 @@
 import math
 
-from fastapi import HTTPException, status, BackgroundTasks
+from fastapi import BackgroundTasks, HTTPException, status
 
 from app.core.redis import CacheService
 from app.models.enums import TaskPriority, TaskStatus, WorkspaceRole
@@ -8,16 +8,15 @@ from app.models.task import Task
 from app.models.user import User
 from app.repositories.project_repo import ProjectRepository
 from app.repositories.task_repo import TaskRepository
-from app.repositories.workspace_repo import WorkspaceRepository
 from app.repositories.user_repo import UserRepository
+from app.repositories.workspace_repo import WorkspaceRepository
 from app.schemas.task import (
     PaginatedResponse,
     TaskCreateRequest,
     TaskResponse,
     TaskUpdateRequest,
 )
-
-from app.services.email_service import EmailService 
+from app.services.email_service import EmailService
 
 
 class TaskService:
@@ -85,14 +84,13 @@ class TaskService:
 
         # 2. Kiểm tra User được gán có tồn tại không
         assignee = self.user_repo.get_by_id(str(dto.assignee_id))
-        if assignee:
-            if str(assignee.email):
-                background_tasks.add_task(
-                    self.email_service.send_task_assignment_email,
-                    to_email=str(assignee.email),
-                    task_title=str(created_task.title),
-                    assignee_name=str(assignee.username)
-                )
+        if assignee and str(assignee.email):
+            background_tasks.add_task(
+                self.email_service.send_task_assignment_email,
+                to_email=str(assignee.email),
+                task_title=str(created_task.title),
+                assignee_name=str(assignee.username)
+            )
   
         # Xóa Cache danh sách task của Project này
         CacheService.delete_pattern(f"project_tasks:{project_id}:*")

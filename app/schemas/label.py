@@ -1,9 +1,10 @@
+
 from pydantic import BaseModel
-from typing import Optional
+
 
 class LabelBase(BaseModel):
     name: str
-    color: Optional[str] = None
+    color: str | None = None
 
 class LabelCreate(LabelBase):
     project_id: str

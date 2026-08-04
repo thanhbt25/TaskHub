@@ -3,8 +3,8 @@ from typing import Any
 from sqlalchemy.orm import Session
 
 from app.models.enums import TaskPriority, TaskStatus
-from app.models.task import Task
 from app.models.label import Label
+from app.models.task import Task
 
 
 class TaskRepository:

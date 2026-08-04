@@ -1,20 +1,21 @@
-from pydantic import BaseModel
-from typing import Optional, List
 from datetime import datetime
+
+from pydantic import BaseModel
+
 
 class CommentBase(BaseModel):
     content: str
-    parent_id: Optional[str] = None
+    parent_id: str | None = None
 
 class CommentCreate(CommentBase):
-    author_id: Optional[str] = None
+    author_id: str | None = None
 
 class CommentResponse(CommentBase):
     id: str
     task_id: str
-    author_id: Optional[str]
+    author_id: str | None
     created_at: datetime
-    replies: List["CommentResponse"] = []
+    replies: list[CommentResponse] = []
 
     class Config:
         from_attributes = True
